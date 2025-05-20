@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>NgK Cipher</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Ubuntu+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0a0a12;
+            --text-color: #bc13fe;
+            --card-bg: rgba(10, 5, 20, 0.9);
+            --neon-purple: #bc13fe;
+            --neon-pink: #ff00ff;
+            --glow-intensity: 0.6;
+        }
+
+        body {
+            background: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Ubuntu Mono', monospace;
+            min-height: 100vh;
+            overflow-x: hidden;
+            margin: 0;
+        }
+
+        #matrix-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.1;
+        }
+
+        .container {
+            max-width: 700px;
+            border: 2px solid var(--neon-purple);
+            border-radius: 10px;
+            padding: 25px;
+            background: var(--card-bg);
+            box-shadow: 0 0 30px rgba(188, 19, 254, 0.3);
+            margin: 50px auto;
+            backdrop-filter: blur(5px);
+            position: relative;
+        }
+
+        .btn-cyber {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--neon-purple);
+            color: var(--neon-pink);
+            transition: all 0.3s ease;
+            margin: 5px;
+            flex: 1;
+        }
+
+        .btn-cyber:hover {
+            background: var(--neon-purple);
+            box-shadow: 0 0 20px var(--neon-purple);
+            transform: scale(1.05);
+        }
+
+        .form-control {
+            background: rgba(0, 0, 0, 0.5) !important;
+            border: 1px solid var(--neon-purple) !important;
+            color: var(--neon-pink) !important;
+            margin: 15px 0;
+        }
+
+        .result-box {
+            border: 1px solid var(--neon-purple);
+            padding: 15px;
+            margin-top: 20px;
+            background: rgba(0, 0, 0, 0.3);
+        }
+
+        .title {
+            text-shadow: 0 0 10px var(--neon-purple);
+            border-bottom: 2px solid var(--neon-purple);
+            padding-bottom: 10px;
+            margin-bottom: 30px;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="matrix-bg"></canvas>
+
+    <div class="container">
+        <h2 class="text-center title">C34SAR C1PH3R v1.337</h2>
+        
+        <form method="POST">
+            <div class="d-flex justify-content-between mb-4">
+                <button type="submit" name="action" value="encrypt" 
+                    class="btn btn-cyber">
+                    ⚡ ENCRYPT
+                </button>
+                <button type="submit" name="action" value="decrypt" 
+                    class="btn btn-cyber">
+                    ⚡ DECRYPT
+                </button>
+            </div>
+
+            <textarea class="form-control" name="text" 
+                rows="5" placeholder="Enter your message..." 
+                required></textarea>
+
+            <input type="number" class="form-control" name="shift" 
+                min="1" max="25" placeholder="Shift value (1-25)" required>
+        </form>
+
+        {% if result %}
+        <div class="result-box">
+            <div class="d-flex justify-content-between align-items-center">
+                <code class="h4" style="color: var(--neon-pink);" id="result-text">{{ result }}</code>
+                <button onclick="copyResult()" class="btn btn-cyber btn-sm">
+                    ⎘ COPY
+                </button>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <script>
+        // Efeito Matrix corrigido
+        const canvas = document.getElementById('matrix-bg');
+        const ctx = canvas.getContext('2d');
+        
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ01$%&/#€¥£¢';
+        const drops = Array(Math.floor(canvas.width/15)).fill(0);
+
+        function drawMatrix() {
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            ctx.fillStyle = '#bc13fe';
+            ctx.font = '14px monospace';
+
+            drops.forEach((drop, i) => {
+                if(drop > 100 || Math.random() > 0.95) drops[i] = 0;
+                const char = chars[Math.floor(Math.random() * chars.length)];
+                ctx.fillText(char, i * 15, drops[i] * 15);
+                drops[i]++;
+            });
+        }
+
+        setInterval(drawMatrix, 50);
+
+        // Copiar função corrigida
+        function copyResult() {
+            const resultText = document.getElementById('result-text');
+            navigator.clipboard.writeText(resultText.textContent)
+                .then(() => {
+                    resultText.textContent = '**********';
+                    fetch('/clear', { method: 'POST' })
+                        .catch(err => console.error('Error:', err));
+                })
+                .catch(err => console.error('Copy error:', err));
+        }
+    </script>
+</body>
+</html>
