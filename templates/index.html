@@ -121,7 +121,6 @@
     </div>
 
     <script>
-        // Efeito Matrix corrigido
         const canvas = document.getElementById('matrix-bg');
         const ctx = canvas.getContext('2d');
         
@@ -153,7 +152,6 @@
 
         setInterval(drawMatrix, 50);
 
-        // Copiar função corrigida
         function copyResult() {
             const resultText = document.getElementById('result-text');
             navigator.clipboard.writeText(resultText.textContent)
